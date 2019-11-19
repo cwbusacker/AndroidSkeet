@@ -11,11 +11,12 @@ import javax.microedition.khronos.opengles.GL10;
 class MyGLRenderer implements GLSurfaceView.Renderer {
 
 
-    private  Triangle triangle;
+    private Circle circle;
 
     private final float[] vPMatrix = new float[16];
     private final float[] projectionMatrix = new float[16];
     private final float[] viewMatrix = new float[16];
+
 
     //Shaders contain OpenGL Shading Language (GLSL) code that
     // must be compiled prior to using it in the OpenGL ES environment.
@@ -36,24 +37,28 @@ class MyGLRenderer implements GLSurfaceView.Renderer {
     public void onSurfaceCreated(GL10 unused, EGLConfig config) {
 
 
-        triangle  =new Triangle();
-
+        circle = new Circle();
         // Set the background frame color
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
     }
 
-    public void onDrawFrame(GL10 unused) {
+    public void onDrawFrame(GL10 gl) {
         // Redraw background color
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
+
         // Set the camera position (View matrix)
         Matrix.setLookAtM(viewMatrix, 0, 0, 0, -3, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
 
         // Calculate the projection and view transformation
         Matrix.multiplyMM(vPMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
 
-        // Draw shape
-        triangle.draw(vPMatrix);
+        circle.advance();
+        Matrix.translateM(vPMatrix, 0, circle.getX(), circle.getY(), 0);
+        circle.draw(vPMatrix);
+
+
+
 
 
     }
