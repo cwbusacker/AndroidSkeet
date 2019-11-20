@@ -5,17 +5,27 @@ import android.opengl.GLES20;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.util.Random;
 
-public class Triangle {
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
 
+public class Star implements Shape {
+
+    Point pt;
+    Point velocity;
+    Random random;
+
+    float angle;
     private FloatBuffer vertexBuffer;
     private final int mProgram;
 
     private int positionHandle;
     private int colorHandle;
 
-    private final int vertexCount = triangleCoords.length / COORDS_PER_VERTEX;
+    private final int vertexCount = 9;
     private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
+
 
 
 
@@ -31,6 +41,7 @@ public class Triangle {
                     "  gl_Position = uMVPMatrix * vPosition;" +
                     "}";
 
+    private float x, y;
     // Use to access and set the view transformation
     private int vPMatrixHandle;
 
@@ -46,14 +57,51 @@ public class Triangle {
 
     // number of coordinates per vertex in this array
     static final int COORDS_PER_VERTEX = 3;
-    static float triangleCoords[] = {   // in counterclockwise order:
-            0.0f,  0.622008459f, 0.0f, // top
-            -0.5f, -0.311004243f, 0.0f, // bottom left
-            0.5f, -0.311004243f, 0.0f  // bottom right
-    };
+    float triangleCoords[];
 
     // Set color with red, green, blue and alpha (opacity) values
-    float color[] = { 1.0f, 1.0f, 0.9f, 1.0f };
+    float color[] = { 1.0f, 0.0f, 0.0f, 1.0f };
+
+
+    public boolean isOffScreen() {
+        return pt.getX() > 1.0f || pt.getY() > 1.0f || pt.getY() < -1.0f || pt.getX() < -0.75f;
+    }
+
+    public float getAngle()
+    {
+        return angle;
+    }
+
+
+    public void advance()
+    {
+       pt.addPoint(velocity);
+    /*   if(pt.getX() > 1.0f || pt.getY() > 1.0f || pt.getY() < -1.0f || pt.getX() < -0.75f)
+        {
+            float newy = random.nextFloat();
+            boolean negy = random.nextInt() % 2 == 0;
+            newy = negy ? -newy : newy;
+            pt.setXY(1.0f, newy);
+            float y = random.nextFloat() / 100;
+            if(!negy)
+                y *= -1;
+            velocity.setXY(-random.nextFloat() / 100 - 0.005f, y);
+
+
+        }*/
+        angle+=10;
+
+    }
+
+    public float getX()
+    {
+        return pt.getX();
+    }
+
+    public float getY()
+    {
+        return pt.getY();
+    }
 
 
 
@@ -99,9 +147,61 @@ public class Triangle {
     }
 
 
-    public Triangle() {
+    public Star() {
+        random = new Random();
+        float y = random.nextFloat();
+        if(random.nextInt(2) == 0)
+            y *= -1;
+        pt = new Point(1.0f, y);
+
+        float negative = 1;
+        if(y > 0)
+            negative = -1;
+        velocity = new Point(-random.nextFloat() / 100 - .01f, random.nextFloat() / 100 * negative);
+
+        float m = 0.1f;
+        triangleCoords = new float[27];
+        //16 triangles create the circle. 365 degrees around the circle
+
+        triangleCoords[0] = -0.362f * m;
+        triangleCoords[1] = -0.118f * m;
+        triangleCoords[2] = 0.0f * m;
+
+        triangleCoords[3] = 0.0f * m;
+        triangleCoords[4] = 1.0f * m;
+        triangleCoords[5] = 0.0f * m;
+
+        triangleCoords[6] = 0.587f * m;
+        triangleCoords[7] = -0.809f * m;
+        triangleCoords[8] = 0.0f * m;
 
 
+
+        triangleCoords[9] = 0.362f * m;
+        triangleCoords[10] = -0.118f * m;
+        triangleCoords[11] = 0.0f * m;
+
+        triangleCoords[12] = 0.0f * m;
+        triangleCoords[13] = 1.0f * m;
+        triangleCoords[14] = 0.0f * m;
+
+        triangleCoords[15] = -0.587f * m;
+        triangleCoords[16] = -0.809f * m;
+        triangleCoords[17] = 0.0f * m;
+
+
+
+        triangleCoords[18] = -0.951f * m;
+        triangleCoords[19] = 0.309f * m;
+        triangleCoords[20] = 0.0f * m;
+
+        triangleCoords[21] = 0.951f * m;
+        triangleCoords[22] = 0.309f * m;
+        triangleCoords[23] = 0.0f * m;
+
+        triangleCoords[24] = 0.0f * m;
+        triangleCoords[25] = -0.3823f * m;
+        triangleCoords[26] = 0.0f * m;
         // initialize vertex byte buffer for shape coordinates
         ByteBuffer bb = ByteBuffer.allocateDirect(
                 // (number of coordinate values * 4 bytes per float)

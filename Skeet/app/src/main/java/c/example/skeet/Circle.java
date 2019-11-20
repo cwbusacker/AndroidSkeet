@@ -10,7 +10,7 @@ import java.util.Random;
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 
-public class Circle {
+public class Circle implements Shape {
 
     Point pt;
     Point velocity;
@@ -58,24 +58,16 @@ public class Circle {
     float triangleCoords[];
 
     // Set color with red, green, blue and alpha (opacity) values
-    float color[] = { 1.0f, 0.0f, 0.0f, 1.0f };
+    float color[] = { 0.545f, 0.271f, 0.075f, 1.0f };
+
+
+    public boolean isOffScreen() {
+        return pt.getX() > 1.0f || pt.getY() > 1.0f || pt.getY() < -1.0f || pt.getX() < -0.75f;
+    }
 
     public void advance()
     {
         pt.addPoint(velocity);
-        if(pt.getX() > 1.0f || pt.getY() > 1.0f || pt.getY() < -1.0f || pt.getX() < -1.0f)
-        {
-            float newy = random.nextFloat();
-            boolean negy = random.nextInt() % 2 == 0;
-            newy = negy ? -newy : newy;
-            pt.setXY(1.0f, newy);
-            float y = random.nextFloat() / 100;
-            if(!negy)
-                y *= -1;
-            velocity.setXY(-random.nextFloat() / 100, y);
-
-
-        }
 
     }
 
@@ -89,8 +81,13 @@ public class Circle {
         return pt.getY();
     }
 
+    @Override
+    public float getAngle() {
+        return 0;
+    }
 
 
+    @Override
     public void draw(float[] mvpMatrix) {
         // Add program to OpenGL ES environment
         GLES20.glUseProgram(mProgram);
@@ -135,13 +132,22 @@ public class Circle {
 
     public Circle() {
         random = new Random();
-        pt = new Point(1.0f, 0.0f);
-        velocity = new Point(random.nextFloat() / 10, random.nextFloat() / 10);
+        float y = random.nextFloat();
+        if(random.nextInt(2) == 0)
+            y *= -1;
+        pt = new Point(1.0f, y);
+
+        float negative = 1;
+        if(y > 0)
+            negative = -1;
+        velocity = new Point(-random.nextFloat() / 100 - 0.01f, random.nextFloat() / 100 * negative);
 
         triangleCoords = new float[144];
-        float degrees = 360.0f / 16.0f;
+        //16 triangles create the circle. 365 degrees around the circle
+        float degrees = 365.0f / 16.0f;
         for(int i = 0; i < 16; i++)
         {
+            //each point for the triangle
             triangleCoords[i * 9] = (float)(0.1f * cos(degrees * i * 3.14/180));
             triangleCoords[i * 9 + 1] = (float) (0.1f * sin(degrees * i * 3.14/ 180));
             triangleCoords[i * 9 + 2] = 0.0f;
