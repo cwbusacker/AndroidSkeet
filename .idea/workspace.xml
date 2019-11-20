@@ -11,7 +11,10 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="50ffc572-9ddf-46e0-b098-c4c3bd9e96a2" name="Default" comment="" />
+    <list default="true" id="50ffc572-9ddf-46e0-b098-c4c3bd9e96a2" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/Skeet/.idea/codeStyles/Project.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Skeet/.idea/codeStyles/Project.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Skeet/app/src/main/java/c/example/skeet/MyGLRenderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/Skeet/app/src/main/java/c/example/skeet/MyGLRenderer.java" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,6 +51,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -74,7 +78,6 @@
         </subPane>
       </pane>
       <pane id="Scope" />
-      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">

@@ -47,7 +47,7 @@ class MyGLRenderer implements GLSurfaceView.Renderer {
         else
             shape = new Circle();
         // Set the background frame color
-        GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        GLES20.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
     }
 
@@ -77,8 +77,12 @@ class MyGLRenderer implements GLSurfaceView.Renderer {
         }
 
         shape.advance();
+        //create a matrix and the translateM will do is change position in the screen
         Matrix.translateM(vPMatrix, 0, shape.getX(), shape.getY(), 0);
+
         Matrix.multiplyMM(scratch, 0, vPMatrix, 0, rotationMatrix, 0);
+
+
         shape.draw(scratch);
 
 

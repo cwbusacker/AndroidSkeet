@@ -142,7 +142,10 @@ public class Circle implements Shape {
             negative = -1;
         velocity = new Point(-random.nextFloat() / 100 - 0.01f, random.nextFloat() / 100 * negative);
 
+        //we cant draw a circle in GL
+        //we need to create a triagle and connect the points!!!!
         triangleCoords = new float[144];
+
         //16 triangles create the circle. 365 degrees around the circle
         float degrees = 365.0f / 16.0f;
         for(int i = 0; i < 16; i++)

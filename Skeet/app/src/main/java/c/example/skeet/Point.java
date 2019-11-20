@@ -4,13 +4,15 @@ package c.example.skeet;
         private float x;
         private float y;
 
+        //non-default constructor
         Point(float x, float y)
         {
             this.x = x;
             this.y = y;
         }
 
-
+       // this combine the velocity and the position
+       // and putting it in the position
         void addPoint(Point p)
         {
             x += p.getX();
