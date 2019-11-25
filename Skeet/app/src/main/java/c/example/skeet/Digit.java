@@ -60,7 +60,7 @@ import static java.lang.Math.sin;
         float digitCoords[];
 
         // Set color with red, green, blue and alpha (opacity) values
-        float color[] = { 1.0f, 0.0f, 0.0f, 1.0f };
+        float color[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 
         public boolean isOffScreen() {
@@ -76,21 +76,7 @@ import static java.lang.Math.sin;
         public void advance()
         {
             pt.addPoint(velocity);
-    /*   if(pt.getX() > 1.0f || pt.getY() > 1.0f || pt.getY() < -1.0f || pt.getX() < -0.75f)
-        {
-            float newy = random.nextFloat();
-            boolean negy = random.nextInt() % 2 == 0;
-            newy = negy ? -newy : newy;
-            pt.setXY(1.0f, newy);
-            float y = random.nextFloat() / 100;
-            if(!negy)
-                y *= -1;
-            velocity.setXY(-random.nextFloat() / 100 - 0.005f, y);
-
-
-        }*/
             angle+=10;
-
         }
 
         public float getX()
@@ -127,7 +113,7 @@ import static java.lang.Math.sin;
             GLES20.glUniform4fv(colorHandle, 1, color, 0);
 
             // Draw the triangle
-            GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexCount);
+            GLES20.glDrawArrays(GLES20.GL_LINE_STRIP, 0, vertexCount);
 
             // Disable vertex array
             GLES20.glDisableVertexAttribArray(positionHandle);
@@ -140,7 +126,7 @@ import static java.lang.Math.sin;
             GLES20.glUniformMatrix4fv(vPMatrixHandle, 1, false, mvpMatrix, 0);
 
             // Draw the triangle
-            GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexCount);
+            GLES20.glDrawArrays(GLES20.GL_LINE_STRIP, 0, vertexCount);
 
             // Disable vertex array
             GLES20.glDisableVertexAttribArray(positionHandle);
@@ -150,29 +136,61 @@ import static java.lang.Math.sin;
         public Digit(int digit) {
 
 
-            int NUMBER_OUTLINES[][] =
-                    {{0, 0, 7, 0, 7, 0, 7,10, 7,10, 0,10, 0,10, 0, 0, -1,-1, -1,-1}, //0
-
-                            {7,   0, 7,   10, -1,   -1, -1,   -1, -1,   -1, -1,  -1, -1,   -1, -1,   -1, -1,   -1, -1,     -1}, //1
-
-                            {0,    0, 7,   0,  7,    0,  7,    5,  7,    5,  0,   5,  0,    5,  0,   10,  0,    10,  7,    10}, //2
-
-                            {0,    0, 7,   0,  7,    0,  7,    10, 7,    10, 0,  10,  4,    5,  7,    5, -1,    -1, -1,   -1}, //3
-
-                            {0,    0, 0,   5,  0,    5,  7,     5, 7,    0,  7,  10, -1,   -1, -1,   -1, -1,    -1, -1,   -1}, //4
-
-                            {7,    0, 0,   0,  0,    0,  0,     5, 0,    5,  7,   5,  7,    5,  7,   10,  7,    10,  0,   10},//5
-
-                            {7,    0, 0,   0,  0,    0,  0,    10, 0,    10, 7,  10,  7,   10,  7,    5,  7,     5,  0,    5},//6
-
-                            {0,    0, 7,   0,  7,    0,  7,    10, -1,   -1,-1,  -1, -1,   -1, -1,   -1, -1,    -1, -1,   -1},//7
-
-                            {0,    0, 7,   0,  0,    5,  7,    5,   0,   10, 7,   10, 0,    0,  0,   10,  7,     0,  7,   10},//8
-
-                            {0,    0, 7,   0,  7,    0,  7,   10,   0,    0, 0,    5, 0,    5,  7,    5, -1,    -1, -1,   -1} //9
+            float NUMBER_OUTLINES[][] =
+                    {       {0, 0, 0, -7, 0, 0, -7, 0, 0, -7,10, 0, -7,10, 0, 0,10, 0, 0,10, 0, 0, 0, 0},               //0
+                            {-7, 0, 0, -7,10, 0},                                                   //1
+                            {0, 0, 0, -7, 0, 0, -7, 0, 0, -7, 5, 0, -7, 5, 0, 0, 5, 0, 0, 5, 0, 0,10, 0, 0,10, 0, -7,10, 0},  //2
+                            {0, 10, 0, -7, 10, 0,-7, 5, 0, -4,5, 0, -7,5, 0, -7,0, 0, 0, 0, 0},               //3
+                            {0, 0, 0, 0, 5, 0, 0, 5, 0, -7, -5, 0, -7, 0, 0, -7,10, 0},                           //4
+                            {-7, 0, 0, 0, 0, 0, 0, 0, 0, 0, -5, 0, 0, 5, 0, -7, 5, 0, -7, 5, 0, -7,10, 0, -7,10, 0, 0,10, 0},   //5
+                            {-7, 0, 0, 0, 0, 0, 0, 0, 0, 0,-10, 0, 0,10, 0, -7,10, 0, -7,10, 0, -7, 5, 0, -7, 5, 0, 0, 5, 0},   //6
+                            {0, 0, 0, -7, 0, 0, -7, 0, 0, -7,10, 0},                                       //7
+                            {0, 0, 0, -7, 0, 0, -7, 10, 0, 0, 10, 0, 0, 0, 0, 0, 5, 0, -7, 5, 0},   //8
+                            {0, 0, 0, -7, 0, 0, -7, 0, 0, -7,10, 0, 0, 0, 0, 0, 5, 0, 0, 5, 0,  -7, 5, 0}               //9
 
             };
 
+            switch(digit)
+            {
+                case 0:
+                    vertexCount = 8;
+                    break;
+                case 1:
+                    vertexCount = 2;
+                    break;
+                case 2:
+                    vertexCount = 10;
+                    break;
+                case 3:
+                    vertexCount = 7;
+                    break;
+                case 4:
+                    vertexCount = 6;
+                    break;
+                case 5:
+                    vertexCount = 10;
+                    break;
+                case 6:
+                    vertexCount = 10;
+                    break;
+                case 7:
+                    vertexCount = 4;
+                    break;
+                case 8:
+                    vertexCount = 7;
+                    break;
+                case 9:
+                    vertexCount = 8;
+                    break;
+            }
+
+            digitCoords = new float[3*vertexCount];
+            //digitCoords = NUMBER_OUTLINES[digit];
+
+            for(int i = 0; i < vertexCount * 3; i++)
+            {
+                digitCoords[i] = NUMBER_OUTLINES[digit][i] * 0.01f;
+            }
             // initialize vertex byte buffer for shape coordinates
             ByteBuffer bb = ByteBuffer.allocateDirect(
                     // (number of coordinate values * 4 bytes per float)

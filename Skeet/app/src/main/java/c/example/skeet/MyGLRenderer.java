@@ -15,12 +15,12 @@ class MyGLRenderer implements GLSurfaceView.Renderer {
 
     private Shape shape;
     private Random r;
-
+    //private Digit d;
     private final float[] vPMatrix = new float[16];
     private final float[] projectionMatrix = new float[16];
     private final float[] viewMatrix = new float[16];
     private float[] rotationMatrix = new float[16];
-
+    private int count;
     //Shaders contain OpenGL Shading Language (GLSL) code that
     // must be compiled prior to using it in the OpenGL ES environment.
     // To compile this code, create a utility method in your renderer class:
@@ -39,7 +39,7 @@ class MyGLRenderer implements GLSurfaceView.Renderer {
 
     public void onSurfaceCreated(GL10 unused, EGLConfig config) {
 
-
+        count = 0;
         r = new Random();
         int nextBird = r.nextInt(2);
         if(nextBird == 0)
@@ -47,6 +47,7 @@ class MyGLRenderer implements GLSurfaceView.Renderer {
         else
             shape = new Circle();
         // Set the background frame color
+        //d = new Digit(3);
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
     }
@@ -58,7 +59,7 @@ class MyGLRenderer implements GLSurfaceView.Renderer {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
 
         // Set the camera position (View matrix)
-        Matrix.setLookAtM(viewMatrix, 0, 0, 0, -3, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
+        Matrix.setLookAtM(viewMatrix, 0, 0, 0, 3, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
 
         // Calculate the projection and view transformation
 
@@ -77,13 +78,20 @@ class MyGLRenderer implements GLSurfaceView.Renderer {
         }
 
         shape.advance();
+        //d.draw(vPMatrix);
+  //      count++;
+//        if(count % 100 == 0) {
+          //  d = new Digit(count / 100);
+            //  if(count == 10000)
+            //  count = 0;
+    //    }
         //create a matrix and the translateM will do is change position in the screen
         Matrix.translateM(vPMatrix, 0, shape.getX(), shape.getY(), 0);
 
         Matrix.multiplyMM(scratch, 0, vPMatrix, 0, rotationMatrix, 0);
 
-
         shape.draw(scratch);
+
 
 
 
