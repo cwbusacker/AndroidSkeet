@@ -13,6 +13,7 @@ import javax.microedition.khronos.opengles.GL10;
 class MyGLRenderer implements GLSurfaceView.Renderer {
 
 
+    private  Rectangle rifle;
     private Shape shape;
     private Random r;
     //private Digit d;
@@ -39,6 +40,7 @@ class MyGLRenderer implements GLSurfaceView.Renderer {
 
     public void onSurfaceCreated(GL10 unused, EGLConfig config) {
 
+        rifle = new Rectangle();
         count = 0;
         r = new Random();
         int nextBird = r.nextInt(2);
@@ -55,7 +57,7 @@ class MyGLRenderer implements GLSurfaceView.Renderer {
     public void onDrawFrame(GL10 gl) {
         // Redraw background color
         float[] scratch = new float[16];
-
+        float[] saveVPM;
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
 
         // Set the camera position (View matrix)
@@ -66,6 +68,8 @@ class MyGLRenderer implements GLSurfaceView.Renderer {
 
 
         Matrix.multiplyMM(vPMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
+        saveVPM = vPMatrix.clone();
+        Matrix.translateM(saveVPM, 0, rifle.getX(), rifle.getY(), 0);
 
         Matrix.setRotateM(rotationMatrix, 0, shape.getAngle(), 0f, 0f, -1.0f);
         if(shape.isOffScreen())
@@ -78,6 +82,7 @@ class MyGLRenderer implements GLSurfaceView.Renderer {
         }
 
         shape.advance();
+        rifle.draw(saveVPM); // vPMatrix is views * Projection
         //d.draw(vPMatrix);
   //      count++;
 //        if(count % 100 == 0) {
