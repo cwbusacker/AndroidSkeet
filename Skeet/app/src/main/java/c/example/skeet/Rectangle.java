@@ -10,8 +10,7 @@ public class Rectangle  implements  Shape{
 
     Point point;
     Point velocity;
-    int width;
-    int weight;
+    int angle;
 
     private FloatBuffer vertexBuffer;
     private final int mProgram;
@@ -70,7 +69,9 @@ public class Rectangle  implements  Shape{
     // constructor
 
 
-    public Rectangle(){
+    public Rectangle(float ratio){
+        angle = 45;
+        point = new Point(-ratio, -1f);
         // initialize vertex byte buffer for shape coordinates
         ByteBuffer bb = ByteBuffer.allocateDirect(
                 // (number of coordinate values * 4 bytes per float)
@@ -153,19 +154,30 @@ public class Rectangle  implements  Shape{
 
     }
 
+    public void rotate(int amount) {
+
+        angle += amount;
+
+        if(angle < 0)
+            angle = 0;
+
+        if(angle > 90)
+            angle = 90;
+
+    }
     @Override
     public float getX() {
-        return 0.5f;
+        return point.getX();
     }
 
     @Override
     public float getY() {
-        return -1.0f;
+        return point.getY();
     }
 
     @Override
     public float getAngle() {
-        return 0;
+        return angle;
     }
 
     @Override
@@ -174,7 +186,9 @@ public class Rectangle  implements  Shape{
     }
 
 
-
+    public void setX(float x) { point.setX(x);}
+    public void setY(float y) {point.setY(y);}
+    public Point getPoint() { return point; }
 
 
 

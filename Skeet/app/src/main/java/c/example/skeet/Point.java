@@ -11,6 +11,12 @@ package c.example.skeet;
             this.y = y;
         }
 
+        Point(Point p)
+        {
+            setX(p.getX());
+            setY(p.getY());
+        }
+
        // this combine the velocity and the position
        // and putting it in the position
         void addPoint(Point p)
