@@ -36,12 +36,13 @@ class MyGLSurfaceView extends GLSurfaceView {
         switch (e.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 isClick = true;
-                renderer.fireBullet();
+
                 break;
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
                 if (isClick) {
-
+                    renderer.fireBullet();
+                    isClick = false;
                 }
                 break;
             case MotionEvent.ACTION_MOVE:

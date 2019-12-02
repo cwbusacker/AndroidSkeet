@@ -6,83 +6,53 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
-public class Rectangle  implements  Shape{
+public class Rectangle  extends  Shape{
 
-    Point point;
-    Point velocity;
-    int angle;
-
-    private FloatBuffer vertexBuffer;
-    private final int mProgram;
-
-    private int positionHandle;
-    private int colorHandle;
-
-    private final int vertexCount = rectCoords.length / COORDS_PER_VERTEX;
-    private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
-
-
-
-    private final String vertexShaderCode =
-            // This matrix member variable provides a hook to manipulate
-            // the coordinates of the objects that use this vertex shader
-            "uniform mat4 uMVPMatrix;" +
-                    "attribute vec4 vPosition;" +
-                    "void main() {" +
-                    // the matrix must be included as a modifier of gl_Position
-                    // Note that the uMVPMatrix factor *must be first* in order
-                    // for the matrix multiplication product to be correct.
-                    "  gl_Position = uMVPMatrix * vPosition;" +
-                    "}";
-
-    // Use to access and set the view transformation
-    private int vPMatrixHandle;
-
-
-    // that is a function to color it
-    private final String fragmentShaderCode =
-            "precision mediump float;" +
-                    "uniform vec4 vColor;" +
-                    "void main() {" +
-                    "  gl_FragColor = vColor;" +
-                    "}";
-
-
-    // number of coordinates per vertex in this array
-    static final int COORDS_PER_VERTEX = 3;
-    static float rectCoords[] = {   // in counterclockwise order:
-             .15f,  0.0622008459f, 0.0f, // top
-            -.15f, -0.0311004243f, 0.0f, // bottom left
-             .15f, -0.0311004243f, 0.0f,  // bottom right
-
-             .15f,  0.0622008459f, 0.0f,
-            -.15f,  0.0622008459f, 0.0f,
-            -.15f, -0.0311004243f, 0.0f,
-
-    };
-
-    // Set color with red, green, blue and alpha (opacity) values
-    float color[] = { .8f, 0.412f, 0f, 1.0f };
-
-
-
-    // constructor
 
 
     public Rectangle(float ratio){
+        setColor(.8f, 0.412f, 0f, 1.0f);
+        vertexCount = 6;
         angle = 45;
-        point = new Point(-ratio, -1f);
+
+        triangleCoords = new float[18];
+        triangleCoords[0] = 0.15f;
+        triangleCoords[1] = 0.0622008459f;
+        triangleCoords[2] = 0f;
+
+        triangleCoords[3] = -0.15f;
+        triangleCoords[4] = -0.0311004243f;
+        triangleCoords[5] = 0f;
+
+        triangleCoords[6] = 0.15f;
+        triangleCoords[7] = -0.0311004243f;
+        triangleCoords[8] = 0f;
+
+        triangleCoords[9] = 0.15f;
+        triangleCoords[10] = 0.0622008459f;
+        triangleCoords[11] = 0f;
+
+        triangleCoords[12] = -0.15f;
+        triangleCoords[13] = 0.0622008459f;
+        triangleCoords[14] = 0f;
+
+        triangleCoords[15] = -0.15f;
+        triangleCoords[16] = -0.0311004243f;
+        triangleCoords[17] = 0f;
+
+
+        pt = new Point(-ratio, -1f);
         // initialize vertex byte buffer for shape coordinates
         ByteBuffer bb = ByteBuffer.allocateDirect(
                 // (number of coordinate values * 4 bytes per float)
-                rectCoords.length * 4);
+                triangleCoords.length * 4);
         // use the device hardware's native byte order
         bb.order(ByteOrder.nativeOrder());
 
         // create a floating point buffer from the ByteBuffer
         vertexBuffer = bb.asFloatBuffer();
         // add the coordinates to the FloatBuffer
-        vertexBuffer.put(rectCoords);
+        vertexBuffer.put(triangleCoords);
         // set the buffer to read the first coordinate
         vertexBuffer.position(0);
 
@@ -107,52 +77,7 @@ public class Rectangle  implements  Shape{
         // creates OpenGL ES program executables
         GLES20.glLinkProgram(mProgram);
     }
-    @Override
-    public void draw(float[] mvpMatrix) {
-        // Add program to OpenGL ES environment
-        GLES20.glUseProgram(mProgram);
 
-        // get handle to vertex shader's vPosition member
-        positionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition");
-
-        // Enable a handle to the triangle vertices
-        GLES20.glEnableVertexAttribArray(positionHandle);
-
-        // Prepare the triangle coordinate data
-        GLES20.glVertexAttribPointer(positionHandle, COORDS_PER_VERTEX,
-                GLES20.GL_FLOAT, false,
-                vertexStride, vertexBuffer);
-
-        // get handle to fragment shader's vColor member
-        colorHandle = GLES20.glGetUniformLocation(mProgram, "vColor");
-
-        // Set color for drawing the triangle
-        GLES20.glUniform4fv(colorHandle, 1, color, 0);
-
-        // Draw the triangle
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexCount);
-
-        // Disable vertex array
-        GLES20.glDisableVertexAttribArray(positionHandle);
-
-
-        // get handle to shape's transformation matrix
-        vPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
-
-        // Pass the projection and view transformation to the shader
-        GLES20.glUniformMatrix4fv(vPMatrixHandle, 1, false, mvpMatrix, 0);
-
-        // Draw the triangle
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexCount);
-
-        // Disable vertex array
-        GLES20.glDisableVertexAttribArray(positionHandle);
-    }
-
-    @Override
-    public void advance() {
-
-    }
 
     public void rotate(int amount) {
 
@@ -165,30 +90,10 @@ public class Rectangle  implements  Shape{
             angle = 90;
 
     }
-    @Override
-    public float getX() {
-        return point.getX();
-    }
-
-    @Override
-    public float getY() {
-        return point.getY();
-    }
-
-    @Override
-    public float getAngle() {
-        return angle;
-    }
-
-    @Override
-    public boolean isOffScreen() {
-        return false;
-    }
 
 
-    public void setX(float x) { point.setX(x);}
-    public void setY(float y) {point.setY(y);}
-    public Point getPoint() { return point; }
+
+
 
 
 

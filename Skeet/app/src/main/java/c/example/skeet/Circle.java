@@ -10,128 +10,12 @@ import java.util.Random;
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 
-public class Circle implements Shape {
-
-    Point pt;
-    Point velocity;
-    Random random;
-
-    private FloatBuffer vertexBuffer;
-    private final int mProgram;
-
-    private int positionHandle;
-    private int colorHandle;
-
-    private final int vertexCount = 48;
-    private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
-
-
-
-    private final String vertexShaderCode =
-            // This matrix member variable provides a hook to manipulate
-            // the coordinates of the objects that use this vertex shader
-            "uniform mat4 uMVPMatrix;" +
-                    "attribute vec4 vPosition;" +
-                    "void main() {" +
-                    // the matrix must be included as a modifier of gl_Position
-                    // Note that the uMVPMatrix factor *must be first* in order
-                    // for the matrix multiplication product to be correct.
-                    "  gl_Position = uMVPMatrix * vPosition;" +
-                    "}";
-
-    private float x, y;
-    // Use to access and set the view transformation
-    private int vPMatrixHandle;
-
-
-    // that is a function to color it
-    private final String fragmentShaderCode =
-            "precision mediump float;" +
-                    "uniform vec4 vColor;" +
-                    "void main() {" +
-                    "  gl_FragColor = vColor;" +
-                    "}";
-
-
-    // number of coordinates per vertex in this array
-    static final int COORDS_PER_VERTEX = 3;
-    float triangleCoords[];
-
-    // Set color with red, green, blue and alpha (opacity) values
-    float color[] = { 0.545f, 0.271f, 0.075f, 1.0f };
-
-
-    public boolean isOffScreen() {
-        return pt.getX() > 5.0f || pt.getY() > 5.0f || pt.getY() < -5.0f || pt.getX() < -0.75f;
-    }
-
-    public void advance()
-    {
-        pt.addPoint(velocity);
-
-    }
-
-    public float getX()
-    {
-        return pt.getX();
-    }
-
-    public float getY()
-    {
-        return pt.getY();
-    }
-
-    @Override
-    public float getAngle() {
-        return 0;
-    }
-
-
-    @Override
-    public void draw(float[] mvpMatrix) {
-        // Add program to OpenGL ES environment
-        GLES20.glUseProgram(mProgram);
-
-        // get handle to vertex shader's vPosition member
-        positionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition");
-
-        // Enable a handle to the triangle vertices
-        GLES20.glEnableVertexAttribArray(positionHandle);
-
-        // Prepare the triangle coordinate data
-        GLES20.glVertexAttribPointer(positionHandle, COORDS_PER_VERTEX,
-                GLES20.GL_FLOAT, false,
-                vertexStride, vertexBuffer);
-
-        // get handle to fragment shader's vColor member
-        colorHandle = GLES20.glGetUniformLocation(mProgram, "vColor");
-
-        // Set color for drawing the triangle
-        GLES20.glUniform4fv(colorHandle, 1, color, 0);
-
-        // Draw the triangle
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexCount);
-
-        // Disable vertex array
-        GLES20.glDisableVertexAttribArray(positionHandle);
-
-
-        // get handle to shape's transformation matrix
-        vPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
-
-        // Pass the projection and view transformation to the shader
-        GLES20.glUniformMatrix4fv(vPMatrixHandle, 1, false, mvpMatrix, 0);
-
-        // Draw the triangle
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexCount);
-
-        // Disable vertex array
-        GLES20.glDisableVertexAttribArray(positionHandle);
-    }
-
+public class Circle extends Shape {
 
     public Circle() {
+        vertexCount = 48;
         random = new Random();
+        setColor(0f, 0.5f,0.0f,  0f);
         float y = random.nextFloat();
         if(random.nextInt(2) == 0)
             y *= -1;
@@ -206,13 +90,12 @@ public class Circle implements Shape {
     }
 
     public Circle(Point p, float angle, double m) {
+        setColor(0.1843f, 0.4705f, 0.929f, 0f);
+        vertexCount = 48;
         random = new Random();
         pt = new Point(p);
         velocity = new Point(-0.05f * (float) cos(angle * 3.14/180), 0.05f * (float) sin(angle * 3.14/180));
 
-        color[0] = 1.0f;
-        color[1] = 1.0f;
-        color[2] = 1.0f;
         //we cant draw a circle in GL
         //we need to create a triagle and connect the points!!!!
         triangleCoords = new float[144];

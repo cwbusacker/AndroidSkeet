@@ -22,7 +22,7 @@ class MyGLRenderer implements GLSurfaceView.Renderer {
     private boolean newBullet;
     private float ratio;
 
-    List<Circle> Bullet;
+    List<Circle> Bullets;
     //private Digit d;
     private float[] vPMatrix = new float[16];
     private final float[] projectionMatrix = new float[16];
@@ -59,7 +59,7 @@ class MyGLRenderer implements GLSurfaceView.Renderer {
 
         newBullet = false;
 
-        Bullet = new ArrayList();
+        Bullets = new ArrayList();
         r = new Random();
         int nextBird = r.nextInt(2);
         if(nextBird == 0)
@@ -72,12 +72,24 @@ class MyGLRenderer implements GLSurfaceView.Renderer {
 
     }
 
+
+    public void handleCollisions()
+    {
+        float closeEnough = 0.005f;
+        for(Circle b : Bullets)
+        {
+            
+        }
+
+    }
+
     public void onDrawFrame(GL10 gl) {
         // Redraw background color
         float[] scratch = new float[16];
         float[] scratch2 = new float[16];
         float[] rifleRotateM = new float[16];
         float[] saveVPM;
+
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
 
         // Set the camera position (View matrix)
@@ -114,13 +126,13 @@ class MyGLRenderer implements GLSurfaceView.Renderer {
 
         if(newBullet) {
             Circle bullet = new Circle(rifle.getPoint(), rifle.getAngle(), 0.3f);
-            Bullet.add(bullet);
+            Bullets.add(bullet);
             newBullet = false;
         }
 
         List<Integer> removeIndexes = new ArrayList();
         int count = 0;
-        for(Circle b : Bullet)
+        for(Circle b : Bullets)
         {
             if(b.isOffScreen()) {
                 removeIndexes.add(count);
@@ -138,7 +150,7 @@ class MyGLRenderer implements GLSurfaceView.Renderer {
 
         for(Integer i : removeIndexes)
         {
-            Bullet.remove(i);
+            Bullets.remove(i);
         }
 
 
@@ -157,5 +169,31 @@ class MyGLRenderer implements GLSurfaceView.Renderer {
         Matrix.frustumM(projectionMatrix, 0, -ratio, ratio, -1, 1, 3, 7);
         rifle = new Rectangle(-ratio);
     }
+
+
+    float getClosestDistance(final Shape s1, final Shape s2)
+    {
+        float dMax = Math.max(Math.abs(s1.getDx()), Math.abs(s1.getDy()));
+        dMax = Math.max(dMax, Math.abs(s2.getDx()));
+        dMax = Math.max(dMax, Math.abs(s2.getDy()));
+
+        float distMin = Float.MAX_VALUE;
+
+        for(float i = 0.0f; i <= dMax; i+= 0.001)
+        {
+            Point p1 = new Point(s1.getX() + s1.getDx() * i / dMax, s1.getY() + s1.getDy() * i / dMax);
+            Point p2 = new Point(s2.getX() + s2.getDx() * i / dMax, s2.getY() + s2.getDy() * i / dMax);
+
+            float xDiff = p1.getX() - p2.getX();
+            float yDiff = p1.getY() - p2.getY();
+
+            float dSquared = (xDiff * xDiff) + yDiff * yDiff;
+            distMin = Math.min(distMin, dSquared);
+
+        }
+
+        return (float) Math.sqrt(distMin);
+    }
+
 
 }
